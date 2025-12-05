@@ -1,6 +1,9 @@
 import Octicons from "@expo/vector-icons/Octicons";
+import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
+import dayjs from "dayjs";
 import { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
@@ -263,6 +266,13 @@ const mockRentPosts = [
       "Pet Friendly",
       "Gym Access",
     ],
+    balcony: 1,
+    drawing: 1,
+    dining: 1,
+    kitchen: 1,
+    gasType: "Natural Gas",
+    lift: true,
+    parking: true,
     availableFrom: "2024-02-01",
     contact: "+1 (555) 123-4567",
   },
@@ -284,6 +294,13 @@ const mockRentPosts = [
     description:
       "Perfect for students or young professionals. This cozy studio apartment is just a few blocks from Central Park. Features include a fully equipped kitchen, modern bathroom, and plenty of natural light.",
     amenities: ["Air Conditioning", "WiFi Included", "Near Public Transport"],
+    balcony: 0,
+    drawing: 1,
+    dining: 1,
+    kitchen: 1,
+    gasType: "LPG",
+    lift: false,
+    parking: false,
     availableFrom: "2024-01-15",
     contact: "+1 (555) 234-5678",
   },
@@ -315,6 +332,13 @@ const mockRentPosts = [
       "Concierge",
       "Gym Access",
     ],
+    balcony: 2,
+    drawing: 1,
+    dining: 1,
+    kitchen: 1,
+    gasType: "Natural Gas",
+    lift: true,
+    parking: true,
     availableFrom: "2024-03-01",
     contact: "+1 (555) 345-6789",
   },
@@ -340,6 +364,13 @@ const mockRentPosts = [
       "Exposed Brick",
       "Parking",
     ],
+    balcony: 0,
+    drawing: 1,
+    dining: 1,
+    kitchen: 1,
+    gasType: "LPG",
+    lift: false,
+    parking: true,
     availableFrom: "2024-02-15",
     contact: "+1 (555) 456-7890",
   },
@@ -368,6 +399,13 @@ const mockRentPosts = [
       "Backyard",
       "Garage",
     ],
+    balcony: 1,
+    drawing: 2,
+    dining: 1,
+    kitchen: 1,
+    gasType: "Natural Gas",
+    lift: false,
+    parking: true,
     availableFrom: "2024-02-20",
     contact: "+1 (555) 567-8901",
   },
@@ -396,6 +434,13 @@ const mockRentPosts = [
       "Gym Access",
       "Pool Access",
     ],
+    balcony: 1,
+    drawing: 1,
+    dining: 1,
+    kitchen: 1,
+    gasType: "Natural Gas",
+    lift: true,
+    parking: true,
     availableFrom: "2024-01-25",
     contact: "+1 (555) 678-9012",
   },
@@ -518,34 +563,93 @@ export default function RentDetailsScreen() {
             </View>
           </View>
 
-          {/* Property Details */}
-          <View className="flex-row items-center gap-6 mb-6 p-4 bg-gray-50 rounded-2xl">
-            <View className="items-center">
-              <Text className="text-2xl mb-1">🛏️</Text>
-              <Text className="text-gray-600 text-sm font-semibold">
-                {post.bedrooms} Bed
-              </Text>
-            </View>
-            <View className="items-center">
-              <Text className="text-2xl mb-1">🚿</Text>
-              <Text className="text-gray-600 text-sm font-semibold">
-                {post.bathrooms} Bath
-              </Text>
-            </View>
-            <View className="items-center">
-              <Text className="text-2xl mb-1">📐</Text>
-              <Text className="text-gray-600 text-sm font-semibold">
-                {post.area} sqft
-              </Text>
-            </View>
-          </View>
-
           {/* Description */}
           <View className="mb-6">
             <Text className="text-xl font-bold text-gray-800 mb-3">
               Description
             </Text>
             <Text className="text-gray-600 leading-6">{post.description}</Text>
+          </View>
+
+          {/* Property Features */}
+          <View className="mb-6">
+            <Text className="text-xl font-bold text-gray-800 mb-3">
+              Property Features
+            </Text>
+            <View className="bg-gray-50 rounded-2xl p-4">
+              <View className="flex-row flex-wrap gap-3">
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <Ionicons name="bed-outline" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Bed:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.bedrooms}
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <MaterialCommunityIcons name="shower" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Bath:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.bathrooms}
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <MaterialCommunityIcons name="square-outline" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Area:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.area} sqft
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <MaterialCommunityIcons name="balcony" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Balcony:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.balcony}
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <Ionicons name="home-outline" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Drawing:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.drawing}
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <MaterialCommunityIcons name="silverware-fork-knife" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Dining:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.dining}
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <MaterialCommunityIcons name="chef-hat" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Kitchen:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.kitchen}
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <MaterialCommunityIcons name="fire" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Gas:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.gasType}
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <MaterialCommunityIcons name="elevator" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Lift:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.lift ? "Yes" : "No"}
+                  </Text>
+                </View>
+                <View className="flex-row items-center bg-white px-4 py-3 rounded-xl flex-1 min-w-[45%]">
+                  <MaterialCommunityIcons name="car" size={20} color="#6366f1" />
+                  <Text className="text-gray-600 text-sm ml-2 mr-2">Parking:</Text>
+                  <Text className="text-gray-900 font-semibold text-sm">
+                    {post.parking ? "Yes" : "No"}
+                  </Text>
+                </View>
+              </View>
+            </View>
           </View>
 
           {/* Amenities */}
@@ -569,7 +673,7 @@ export default function RentDetailsScreen() {
             <View className="flex-row items-center justify-between mb-2">
               <Text className="text-gray-600">Available From</Text>
               <Text className="text-gray-800 font-semibold">
-                {post.availableFrom}
+                {dayjs(post.availableFrom).format("MMMM D, YYYY")}
               </Text>
             </View>
             <View className="flex-row items-center justify-between">
