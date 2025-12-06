@@ -80,13 +80,17 @@ export function ZoomableImage({
   };
 
   const rotate = () => {
-    rotation.value = withSpring(savedRotation.value + Math.PI / 2);
-    savedRotation.value = rotation.value;
+    "worklet";
+    const newRotation = savedRotation.value + Math.PI / 2;
+    savedRotation.value = newRotation;
+    rotation.value = withSpring(newRotation);
   };
 
   const rotateCounterClockwise = () => {
-    rotation.value = withSpring(savedRotation.value - Math.PI / 2);
-    savedRotation.value = rotation.value;
+    "worklet";
+    const newRotation = savedRotation.value - Math.PI / 2;
+    savedRotation.value = newRotation;
+    rotation.value = withSpring(newRotation);
   };
 
   // Expose control functions via ref
@@ -166,15 +170,23 @@ export function ZoomableImage({
     .minPointers(1)
     .maxPointers(1)
     .onUpdate((event) => {
-      if (scale.value > 1) {
+      "worklet";
+      // Only pan if image is zoomed or rotated
+      // When in initial state, don't interfere with horizontal scrolling
+      if (scale.value > 1 || Math.abs(rotation.value) > 0.01) {
         translateX.value = savedTranslateX.value + event.translationX;
         translateY.value = savedTranslateY.value + event.translationY;
       }
     })
     .onEnd(() => {
-      savedTranslateX.value = translateX.value;
-      savedTranslateY.value = translateY.value;
-    });
+      "worklet";
+      if (scale.value > 1 || Math.abs(rotation.value) > 0.01) {
+        savedTranslateX.value = translateX.value;
+        savedTranslateY.value = translateY.value;
+      }
+    })
+    // Make horizontal swipes fail easily when in initial state to allow ScrollView scrolling
+    .failOffsetX([-5, 5]);
 
   const composedGesture = Gesture.Race(
     doubleTap,
